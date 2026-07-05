@@ -1,0 +1,38 @@
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"]
+    },
+    "context7": {
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "exa": {
+      "url": "https://mcp.exa.ai/mcp"
+    },
+    "gh_grep": {
+      "url": "https://mcp.grep.app"
+    },
+    "websearch": {
+      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa"
+    },
+    "postgres": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "{{POSTGRES_MCP_URL}}"
+      ]
+    },
+    "codegraph": {
+      "command": "node",
+      "args": [
+        "{{CODEGRAPH_SHIM}}",
+        "serve",
+        "--mcp",
+        "--path",
+        "${workspaceFolder}"
+      ]
+    }
+  }
+}
