@@ -9,10 +9,14 @@
       "syncScript": "scripts/sync-mcp.ps1"
     },
     "skills": {
+      "globalSkill": "unified-ai-tooling",
+      "globalSkillPath": "~/.agents/skills/unified-ai-tooling",
+      "submodules": ["references/audit.md", "references/mcp.md", "references/install.md"],
       "customDir": "~/.agents/skills",
       "repoCustomDir": "skills/custom",
       "externalManifest": "skills/external.manifest.json",
-      "syncScript": "scripts/sync-skills.ps1"
+      "syncScript": "scripts/sync-skills.ps1",
+      "deprecatedSkills": ["unified-mcp", "ai-setup-audit"]
     },
     "opencode": {
       "orchestration": "%APPDATA%/orca/opencode-hooks/shared/oh-my-opencode-slim.json",
@@ -29,8 +33,8 @@
     },
     "audit": {
       "report": "~/.config/ai/audit-report.json",
-      "script": "~/.config/ai/audit-setup.ps1",
-      "repoScript": "scripts/audit-setup.ps1"
+      "script": "~/.agents/skills/unified-ai-tooling/scripts/audit-setup.ps1",
+      "reference": "~/.agents/skills/unified-ai-tooling/references/audit.md"
     }
   },
   "tools": ["cursor", "grok", "opencode", "antigravity", "gemini-cli", "claude"]

@@ -50,7 +50,7 @@ unified-ai-tooling/
 pwsh ~/.config/ai/audit-setup.ps1           # отчёт в ~/.config/ai/audit-report.json
 ```
 
-Скилл для агентов: **`ai-setup-audit`** — сравнивает MCP, скиллы, OpenCode, Grok, hooks без изменений.
+Один скилл для агентов: **`unified-ai-tooling`** — роутер с подмодулями `references/audit.md`, `mcp.md`, `install.md`.
 
 ## Команды
 
@@ -73,4 +73,4 @@ pwsh scripts/sync-skills.ps1 -CustomOnly    # только свои скиллы
 
 ## Скилл для агентов
 
-После install: `unified-ai-tooling` и `unified-mcp` в `~/.agents/skills/`.
+После install: только `unified-ai-tooling` в `~/.agents/skills/` (внутри scripts + references).

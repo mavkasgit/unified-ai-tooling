@@ -11,13 +11,12 @@ $ErrorActionPreference = 'Stop'
 
 Write-Host "Installing unified-ai-tooling from $RepoRoot"
 
-# 0. Audit script -> ~/.config/ai/
 $aiConfig = Join-Path $env:USERPROFILE '.config\ai'
 if (-not (Test-Path $aiConfig)) { New-Item -ItemType Directory -Path $aiConfig -Force | Out-Null }
-Copy-Item (Join-Path $RepoRoot 'scripts\audit-setup.ps1') (Join-Path $aiConfig 'audit-setup.ps1') -Force
-Write-Host "  audit -> $(Join-Path $aiConfig 'audit-setup.ps1')"
+@{ repoRoot = $RepoRoot } | ConvertTo-Json | Set-Content (Join-Path $aiConfig 'tooling-repo.json') -Encoding UTF8
+Write-Host "  repo path -> $(Join-Path $aiConfig 'tooling-repo.json')"
 
-# 1. Skills (custom always; external via npx unless skipped)
+# 1. Skills first (installs unified-ai-tooling with scripts/ + references/)
 $skillArgs = @('-File', (Join-Path $RepoRoot 'scripts\sync-skills.ps1'))
 if ($SkipExternalSkills) { $skillArgs += '-CustomOnly' }
 & pwsh -NoProfile -ExecutionPolicy Bypass @skillArgs
@@ -76,7 +75,8 @@ else {
 
 Write-Host ''
 Write-Host 'Done. Components:'
-Write-Host '  skills  -> ~/.agents/skills/'
+Write-Host '  skill   -> ~/.agents/skills/unified-ai-tooling/ (единый вход)'
+Write-Host '  refs    -> audit.md, mcp.md, install.md'
 Write-Host '  mcp     -> ~/.config/ai/ + all AI tools'
 Write-Host '  opencode -> %APPDATA%/orca/opencode-hooks/shared/'
 Write-Host '  grok    -> ~/.grok/config.toml [compat]'

@@ -14,8 +14,19 @@ if (-not (Test-Path $SkillTarget)) {
     New-Item -ItemType Directory -Path $SkillTarget -Force | Out-Null
 }
 
+function Remove-StaleSkills {
+    foreach ($name in @('unified-mcp', 'ai-setup-audit')) {
+        $stale = Join-Path $SkillTarget $name
+        if (Test-Path $stale) {
+            Remove-Item $stale -Recurse -Force
+            Write-Host "  removed stale skill: $name"
+        }
+    }
+}
+
 function Install-CustomSkills {
     if (-not (Test-Path $CustomSource)) { return }
+    Remove-StaleSkills
     Get-ChildItem $CustomSource -Directory | ForEach-Object {
         $dest = Join-Path $SkillTarget $_.Name
         if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }

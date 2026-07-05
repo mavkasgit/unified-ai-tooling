@@ -1,59 +1,87 @@
 ---
 name: unified-ai-tooling
 description: >
-  Единый стек AI-инструментов: MCP, скиллы, OpenCode orchestration, Grok compat.
-  Синхронизирует конфиги между OpenCode, Grok, Cursor, Antigravity. Триггеры:
-  unified ai, ai tooling, синхронизировать скиллы, обновить ai стек, /unified-ai.
+  Единый глобальный скилл AI-стека: аудит, MCP, установка, OpenCode, Grok compat.
+  Один вход — внутри вызывает подмодули (references/audit.md, mcp.md, install.md).
+  Триггеры: unified ai, /unified-ai, синхронизировать mcp, аудит ai, /ai-audit,
+  ai tooling, обновить ai стек, drift, расхождения конфигов, sync mcp, что настроено.
 ---
 
 # unified-ai-tooling
 
-Репозиторий: `https://github.com/mavkasgit/unified-ai-tooling`
+**Единственная точка входа** для MCP, аудита и установки AI-стека.
 
-## Что входит в стек
+Репозиторий: `https://github.com/mavkasgit/unified-ai-tooling`  
+Путь скилла: `~/.agents/skills/unified-ai-tooling/`
 
-| Компонент | Канон / источник | Куда ставится |
+## Маршрутизация — что читать и запускать
+
+| Намерение пользователя | Подмодуль | Действие |
 |---|---|---|
-| **MCP** | `~/.config/ai/mcp-servers.json` | Cursor, Grok, OpenCode, Antigravity |
-| **Скиллы (свои)** | `skills/custom/` в репо | `~/.agents/skills/` |
-| **Скиллы (внешние)** | `skills/external.manifest.json` | `npx skills add` |
-| **OpenCode** | `opencode/*.json` | `%APPDATA%/orca/opencode-hooks/shared/` |
-| **Grok compat** | `grok/config.template.toml` | `~/.grok/config.toml` |
-| **Hooks** | Orca | `~/.orca/agent-hooks/` (не в git) |
+| Аудит, сравнить, что настроено, drift | [`references/audit.md`](references/audit.md) | `scripts/audit-setup.ps1` — **без изменений** |
+| MCP: sync, добавил mcp, обновить mcp | [`references/mcp.md`](references/mcp.md) | `scripts/sync-mcp.ps1` |
+| Установка, git pull, первый setup | [`references/install.md`](references/install.md) | `scripts/install.ps1` из репо |
+| Полный цикл «проверь и почини» | audit → mcp/install | сначала audit, fix по запросу |
 
-Состояние MCP: `~/.config/ai/environments.json`  
-Полный аудит всех компонентов: **`ai-setup-audit`** → `~/.config/ai/audit-report.json`
+**Алгоритм агента:**
 
-## Команды
+1. Определи намерение по таблице выше.
+2. **Прочитай соответствующий файл** в `references/` (полные инструкции там).
+3. Запускай скрипты из `~/.agents/skills/unified-ai-tooling/scripts/`.
+4. Читай отчёты: `audit-report.json`, `environments.json`.
+5. Доложи таблицей по инструментам (Cursor, Grok, OpenCode, Antigravity, Gemini CLI).
+
+## Быстрые команды
 
 ```powershell
-# Полная установка / обновление
-cd unified-ai-tooling
-git pull
-pwsh scripts/install.ps1
+$Base = "$env:USERPROFILE\.agents\skills\unified-ai-tooling\scripts"
 
-# Только MCP
-pwsh scripts/sync-mcp.ps1 -Action Sync
+# Аудит (всегда первым при «что настроено»)
+pwsh "$Base\audit-setup.ps1"
 
-# Только скиллы
-pwsh scripts/sync-skills.ps1
-pwsh scripts/sync-skills.ps1 -CustomOnly      # без npx skills add
+# MCP sync
+pwsh "$Base\sync-mcp.ps1" -Action Sync
+
+# MCP status only
+pwsh "$Base\sync-mcp.ps1" -Action Status
 ```
 
-## Алгоритм агента
+Обёртки в `~/.config/ai/`: `audit-setup.ps1`, `sync-mcp.ps1`
 
-0. **Сначала аудит** (без изменений): скилл `ai-setup-audit` → `pwsh ~/.config/ai/audit-setup.ps1`
-1. Прочитай `manifest.json`, `audit-report.json`, `environments.json`
-2. При «добавил скилл / mcp / поменял opencode» — определи компонент
-3. Для MCP → `sync-mcp.ps1 -Action Sync`
-4. Для своего скилла → положи в `skills/custom/<name>/`, `sync-skills.ps1 -CustomOnly`, commit в git
-5. Для внешнего скилла → добавь в `external.manifest.json`, `sync-skills.ps1`
-6. Для OpenCode orchestration → правь `opencode/`, `install.ps1`
-7. Отчёт: что синхронизировано, что требует Orca / .env
+## Структура скилла
 
-## Не в git
+```
+unified-ai-tooling/
+├── SKILL.md              ← ты здесь (роутер)
+├── references/
+│   ├── audit.md          ← диагностика
+│   ├── mcp.md            ← синхронизация MCP
+│   └── install.md        ← установка стека
+└── scripts/
+    ├── audit-setup.ps1
+    ├── sync-mcp.ps1
+    └── install-mcp.ps1
+```
 
-- `~/.config/ai/.env` — секреты
-- `~/.config/ai/environments.json` — runtime-снимок
-- `~/.orca/agent-hooks/` — ставится Orca
-- `~/.grok/skills/` — встроенные скиллы Grok (docx, pptx…)
+Отдельных скиллов `unified-mcp` и `ai-setup-audit` **больше нет** — всё через этот.
+
+## Стек (кратко)
+
+| Компонент | Канон | Куда |
+|---|---|---|
+| MCP | `~/.config/ai/mcp-servers.json` | Cursor, Grok, OpenCode, Antigravity |
+| Скиллы (свои) | `skills/custom/` в репо | `~/.agents/skills/` |
+| OpenCode | `opencode/*.json` | `%APPDATA%/orca/opencode-hooks/shared/` |
+| Grok | `[compat.cursor]` | `~/.grok/config.toml` |
+| Hooks | Orca | `~/.orca/agent-hooks/` |
+
+## Правила
+
+- **Аудит** — не меняет файлы; sync/install — только по запросу или явной задаче.
+- MCP JSON **не одинаков** для всех инструментов — канон Cursor-like, sync трансформирует (см. `references/mcp.md`).
+- Секреты только в `~/.config/ai/.env`, не в ответах пользователю.
+
+## Связанные скиллы (вне этого пакета)
+
+- `opencode-go-orchestration-setup` — детали агентов OpenCode
+- `orchestrator-hands` — режим оркестратора
