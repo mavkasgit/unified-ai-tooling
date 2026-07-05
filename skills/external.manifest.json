@@ -1,0 +1,15 @@
+{
+  "description": "Внешние скиллы — ставятся через npx skills add, не хранятся в репозитории",
+  "installCommand": "npx skills add {source} -g -y",
+  "skills": [
+    { "name": "find-skills", "source": "vercel-labs/skills@find-skills" },
+    { "name": "e2e-testing-patterns", "source": "wshobson/agents@e2e-testing-patterns" },
+    { "name": "writing-plans", "source": "obra/superpowers@writing-plans" },
+    { "name": "git-commit", "source": "github/awesome-copilot@git-commit" },
+    { "name": "supabase-postgres-best-practices", "source": "supabase/agent-skills@supabase-postgres-best-practices" },
+    { "name": "pytest-coverage", "source": "github/awesome-copilot@pytest-coverage" },
+    { "name": "grill-me", "source": "mattpocock/skills@grill-me" },
+    { "name": "orchestration", "source": "stablyai/orca@orchestration" },
+    { "name": "computer-use", "source": "stablyai/orca@computer-use" }
+  ]
+}

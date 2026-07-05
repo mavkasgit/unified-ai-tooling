@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "name": "unified-ai-tooling",
+  "description": "Единый стек AI-инструментов: MCP, скиллы, OpenCode, Grok compat",
+  "components": {
+    "mcp": {
+      "canonical": "~/.config/ai/mcp-servers.json",
+      "state": "~/.config/ai/environments.json",
+      "syncScript": "scripts/sync-mcp.ps1"
+    },
+    "skills": {
+      "customDir": "~/.agents/skills",
+      "repoCustomDir": "skills/custom",
+      "externalManifest": "skills/external.manifest.json",
+      "syncScript": "scripts/sync-skills.ps1"
+    },
+    "opencode": {
+      "orchestration": "%APPDATA%/orca/opencode-hooks/shared/oh-my-opencode-slim.json",
+      "core": "%APPDATA%/orca/opencode-hooks/shared/opencode.json",
+      "mcp": "~/.config/opencode/opencode.json"
+    },
+    "grok": {
+      "config": "~/.grok/config.toml",
+      "template": "grok/config.template.toml"
+    },
+    "hooks": {
+      "provider": "orca",
+      "path": "~/.orca/agent-hooks"
+    }
+  },
+  "tools": ["cursor", "grok", "opencode", "antigravity", "gemini-cli", "claude"]
+}

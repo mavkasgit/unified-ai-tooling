@@ -1,87 +1,68 @@
-# unified-mcp
+# unified-ai-tooling
 
-Единая система MCP для **OpenCode**, **Grok**, **Cursor**, **Antigravity** и **Gemini CLI**.
+Единый стек AI-инструментов: **MCP**, **скиллы**, **OpenCode orchestration**, **Grok compat**.
 
-Один канонический конфиг → синхронизация во все среды. Pull подхватывает новые серверы, если вы добавили их в одном инструменте.
+Один репозиторий → одна команда установки → все среды синхронизированы.
 
 ## Быстрый старт
 
 ```powershell
-git clone https://github.com/mavkasgit/unified-mcp.git
-cd unified-mcp
+git clone https://github.com/mavkasgit/unified-ai-tooling.git
+cd unified-ai-tooling
 pwsh scripts/install.ps1
-# отредактируйте ~/.config/ai/.env
-pwsh ~/.config/ai/sync-mcp.ps1 -Action Sync
+# заполните ~/.config/ai/.env
 ```
+
+## Что уже унифицировано локально
+
+| Компонент | Статус | Где живёт |
+|---|---|---|
+| MCP | ✅ этот репо | `~/.config/ai/` → все инструменты |
+| Свои скиллы | ✅ этот репо | `skills/custom/` → `~/.agents/skills/` |
+| Внешние скиллы | 📋 манифест | `npx skills add` из `external.manifest.json` |
+| OpenCode agents | ✅ этот репо | `opencode/` → Orca shared config |
+| Grok compat | ✅ шаблон | `[compat.cursor]` в `config.toml` |
+| Hooks | ⚙️ Orca | `~/.orca/agent-hooks/` (не в git) |
+| Grok built-in skills | ❌ не трогаем | `~/.grok/skills/` (docx, pptx…) |
 
 ## Структура
 
 ```
-unified-mcp/
-├── config/mcp-servers.template.json   # шаблон без секретов
-├── scripts/
-│   ├── install.ps1                    # установка в ~/.agents и ~/.config/ai
-│   └── sync-mcp.ps1                   # Pull / Push / Sync / Status
-├── skill/SKILL.md                       # скилл для AI-агентов
-└── .env.example
+unified-ai-tooling/
+├── manifest.json              # реестр компонентов
+├── mcp/                       # (legacy paths: config/, skill/)
+├── skills/
+│   ├── custom/                # ваши скиллы (orchestrator-hands, pytest-writer…)
+│   └── external.manifest.json # внешние скиллы для npx skills
+├── opencode/                  # oh-my-opencode-slim + core config
+├── grok/                      # config.template.toml
+├── hooks/                     # документация (Orca)
+└── scripts/
+    ├── install.ps1            # всё сразу
+    ├── sync-mcp.ps1
+    ├── sync-skills.ps1
+    └── install-mcp.ps1
 ```
-
-После установки:
-
-| Файл | Назначение |
-|---|---|
-| `~/.config/ai/mcp-servers.json` | Канон (источник правды) |
-| `~/.config/ai/environments.json` | Снимок состояния по средам (генерируется) |
-| `~/.config/ai/.env` | Секреты и локальные пути (не в git) |
-| `~/.agents/skills/unified-mcp/` | Скилл для агентов |
-
-## Куда синхронизируется
-
-| Среда | Путь |
-|---|---|
-| Cursor | `~/.cursor/mcp.json` |
-| Grok | `~/.cursor/mcp.json` (compat) + `~/.grok/config.toml` |
-| OpenCode | `~/.config/opencode/opencode.json` |
-| Antigravity | `~/.gemini/config/mcp_config.json` |
-| Gemini CLI | `~/.gemini/settings.json` |
 
 ## Команды
 
 ```powershell
-pwsh ~/.config/ai/sync-mcp.ps1                  # Sync (pull + push)
-pwsh ~/.config/ai/sync-mcp.ps1 -Action Status   # диагностика
-pwsh ~/.config/ai/sync-mcp.ps1 -Action Pull     # подтянуть из сред
-pwsh ~/.config/ai/sync-mcp.ps1 -Action Push     # раздать canonical
+pwsh scripts/install.ps1                    # полная установка
+pwsh scripts/install.ps1 -SkipExternalSkills  # без npx skills add
+pwsh scripts/sync-mcp.ps1 -Action Status    # статус MCP по средам
+pwsh scripts/sync-skills.ps1 -CustomOnly    # только свои скиллы
 ```
 
-## MCP по умолчанию
+## Добавить свой скилл
 
-- `chrome-devtools` — браузерная автоматизация
-- `context7` — документация библиотек
-- `exa` / `websearch` — веб-поиск
-- `gh_grep` — поиск по GitHub
-- `postgres` — локальная БД (URL из `.env`)
-- `codegraph` — индекс кода (требует `@colbymchenry/codegraph`)
-
-## Обновление с GitHub
-
-```powershell
-cd unified-mcp
-git pull
-pwsh scripts/install.ps1   # обновит скилл и скрипты
-pwsh ~/.config/ai/sync-mcp.ps1 -Action Sync
-```
-
-`mcp-servers.json` и `.env` при install не перезаписываются, если уже существуют.
+1. Создай `skills/custom/my-skill/SKILL.md`
+2. `pwsh scripts/sync-skills.ps1 -CustomOnly`
+3. `git commit && git push`
 
 ## Безопасность
 
-- **Не коммитьте** `~/.config/ai/.env` и `mcp-servers.json` с реальными паролями
-- В репозитории только `mcp-servers.template.json` с плейсхолдерами
-- `environments.json` — локальный runtime-файл, в gitignore
+Не коммитьте: `.env`, `mcp-servers.json` с паролями, `environments.json`.
 
 ## Скилл для агентов
 
-После `install.ps1` агенты (Grok, Cursor, OpenCode) подхватывают скилл `unified-mcp` из `~/.agents/skills/`.
-
-Триггеры: «синхронизируй mcp», `/unified-mcp`, «добавил mcp сервер».
+После install: `unified-ai-tooling` и `unified-mcp` в `~/.agents/skills/`.

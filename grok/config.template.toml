@@ -1,0 +1,31 @@
+[cli]
+installer = "internal"
+
+[ui]
+max_thoughts_width = 120
+fork_secondary_model = "grok-build"
+yolo = false
+compact_mode = false
+permission_mode = "always-approve"
+
+[marketplace]
+official_marketplace_auto_installed = true
+
+[[marketplace.sources]]
+name = "xAI Official"
+git = "https://github.com/xai-org/plugin-marketplace.git"
+
+# Единый стек: MCP из ~/.cursor/mcp.json, скиллы из ~/.agents/skills/
+[compat.cursor]
+mcps = true
+skills = true
+rules = true
+agents = true
+hooks = true
+
+[compat.claude]
+skills = true
+rules = true
+agents = true
+mcps = true
+hooks = true
