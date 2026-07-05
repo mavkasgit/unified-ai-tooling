@@ -21,7 +21,8 @@ description: >
 | **Grok compat** | `grok/config.template.toml` | `~/.grok/config.toml` |
 | **Hooks** | Orca | `~/.orca/agent-hooks/` (не в git) |
 
-Состояние MCP: `~/.config/ai/environments.json`
+Состояние MCP: `~/.config/ai/environments.json`  
+Полный аудит всех компонентов: **`ai-setup-audit`** → `~/.config/ai/audit-report.json`
 
 ## Команды
 
@@ -41,7 +42,8 @@ pwsh scripts/sync-skills.ps1 -CustomOnly      # без npx skills add
 
 ## Алгоритм агента
 
-1. Прочитай `manifest.json` и `~/.config/ai/environments.json`
+0. **Сначала аудит** (без изменений): скилл `ai-setup-audit` → `pwsh ~/.config/ai/audit-setup.ps1`
+1. Прочитай `manifest.json`, `audit-report.json`, `environments.json`
 2. При «добавил скилл / mcp / поменял opencode» — определи компонент
 3. Для MCP → `sync-mcp.ps1 -Action Sync`
 4. Для своего скилла → положи в `skills/custom/<name>/`, `sync-skills.ps1 -CustomOnly`, commit в git

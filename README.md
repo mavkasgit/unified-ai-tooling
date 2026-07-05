@@ -44,6 +44,14 @@ unified-ai-tooling/
     └── install-mcp.ps1
 ```
 
+## Аудит (сравнение по инструментам)
+
+```powershell
+pwsh ~/.config/ai/audit-setup.ps1           # отчёт в ~/.config/ai/audit-report.json
+```
+
+Скилл для агентов: **`ai-setup-audit`** — сравнивает MCP, скиллы, OpenCode, Grok, hooks без изменений.
+
 ## Команды
 
 ```powershell

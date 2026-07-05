@@ -11,6 +11,12 @@ $ErrorActionPreference = 'Stop'
 
 Write-Host "Installing unified-ai-tooling from $RepoRoot"
 
+# 0. Audit script -> ~/.config/ai/
+$aiConfig = Join-Path $env:USERPROFILE '.config\ai'
+if (-not (Test-Path $aiConfig)) { New-Item -ItemType Directory -Path $aiConfig -Force | Out-Null }
+Copy-Item (Join-Path $RepoRoot 'scripts\audit-setup.ps1') (Join-Path $aiConfig 'audit-setup.ps1') -Force
+Write-Host "  audit -> $(Join-Path $aiConfig 'audit-setup.ps1')"
+
 # 1. Skills (custom always; external via npx unless skipped)
 $skillArgs = @('-File', (Join-Path $RepoRoot 'scripts\sync-skills.ps1'))
 if ($SkipExternalSkills) { $skillArgs += '-CustomOnly' }

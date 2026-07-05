@@ -26,6 +26,11 @@
     "hooks": {
       "provider": "orca",
       "path": "~/.orca/agent-hooks"
+    },
+    "audit": {
+      "report": "~/.config/ai/audit-report.json",
+      "script": "~/.config/ai/audit-setup.ps1",
+      "repoScript": "scripts/audit-setup.ps1"
     }
   },
   "tools": ["cursor", "grok", "opencode", "antigravity", "gemini-cli", "claude"]
